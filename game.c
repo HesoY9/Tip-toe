@@ -3,35 +3,87 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <time.h>
+
 enum winState { WIN, DRAW, CONTINUE };
 uint8_t m;
+uint8_t **board;
+char timestamp[26];
+
+void drawBoard();
+void resetBoard();
+void addToBoard(char c, uint8_t x, uint8_t y);
+bool isValidMove(uint8_t x, uint8_t y);
+enum winState game_logic(char c, uint8_t x, uint8_t y);
+bool rowCheck(char c);
+bool columnCheck(char c);
+bool diagonalCheck(char c);
+char bigChar(char d);
+void writeFile();
+void getTime();
+void gameplay();
 
 int main() {
     printf("Welcome to Tip-toe!\n");
     printf("Enter N for an N x N board: ");
-    scanf("%d", &m);
+    scanf("%hhd", &m);
     printf("Player 1 is X and Player 2 is O\n");
+    board = (uint8_t **)malloc(m * sizeof(uint8_t *));
+    if (!board) {
+        fprintf(stderr, "Memory allocation failed\n");
+        return 1;
+    }
+    for (uint8_t i = 0; i < m; i++) {
+        board[i] = (uint8_t *)malloc(m * sizeof(uint8_t));
+        if (!board[i]) {
+            fprintf(stderr, "Memory allocation failed\n");
+            return 1;
+        }
+    }
 
-    uint8_t *board = (uint8_t *)malloc(m * m * sizeof(uint8_t));
-    board[m][m];
     resetBoard();
-    uint8_t x, y;
-    do
-    {
-       printf("player 1\nEnter location x y");
-       scanf("%d %d", &x, &y);
-       enum winState result = game_logic();
-    } while (condition);
-
-    printf("player 1\nEnter location x y");
-    scanf("%d %d", &x, &y) 
-    enum winState result = game_logic();
-    x=y=0;
+    drawBoard();
+    gameplay();
+    for (uint8_t i = 0; i < m; i++) {
+        free(board[i]);
+    }
+    free(board);
     return 0;
-}// copilot is a bad
+}
 
 void gameplay(){
-
+    uint8_t x, y;
+    enum winState result;
+    do
+    {  writeFile();
+       printf("player 1\nEnter location x y");
+       scanf("%hhd %hhd", &x, &y);
+       if (!isValidMove(x, y))
+       { printf("Invalid move, try again.\n");
+         continue; }
+       result = game_logic('X', x, y);
+       if (result == WIN)
+       { printf("Player 1 wins!\n");
+         writeFile();
+         return; }
+       if (result == DRAW)
+       { printf("It's a draw!\n");
+         writeFile();
+         return; }
+       printf("player 2\nEnter location x y");
+       scanf("%hhd %hhd", &x, &y);
+         if (!isValidMove(x, y))
+         { printf("Invalid move, try again.\n");
+            continue; }
+       result = game_logic('O', x, y);
+       if (result == WIN)
+       { printf("Player 2 wins!\n");
+         writeFile();
+         return; }
+       if (result == DRAW)
+       { printf("It's a draw!\n");
+         writeFile();
+         return; }
+    } while (true);
 }
 
 
@@ -142,8 +194,8 @@ void writeFile(){
     if (f == NULL)
     {   printf("Error opening file!\n");
         exit(1);
-    }getTime()
-    fprintf(f, "Game Log:%s\n", time);
+    }getTime();
+    fprintf(f, "Game Log:%s\n", timestamp);
     for (uint8_t i = 0; i < m; i++)
     {   for (uint8_t j = 0; j < m; j++)
         {fprintf(f, "| %c ", board[i][j]);}
@@ -155,9 +207,9 @@ void writeFile(){
     fclose(f);
 } // write the game log to a file
 
-char time[26];
+
 void getTime(){
     time_t now = time(NULL);
     struct tm *t = localtime(&now);
-    strftime(time, sizeof(time), "%Y-%m-%d %H:%M:%S", t);
-} // get the current time
+    strftime(timestamp, sizeof(timestamp), "%Y-%m-%d %H:%M:%S", t);
+}
