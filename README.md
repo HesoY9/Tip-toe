@@ -4,7 +4,7 @@ The game is written in C and features input validation, dynamic memory allocatio
 
 <h2>How to compile and run</h2>
 gcc game.c hdr.c -o game<br>
-./game<br> This project is for educational purposes.
+./game<br> 
 <h2>Author</h2>
 Sajith Y D (IT25100449)
-
+<br> <br> This project is for educational purposes.
