@@ -4,6 +4,14 @@
 #include <stdbool.h>
 #include "hdr.h"
 
+#if defined(_WIN32) || defined(_WIN64)
+    #include <windows.h>
+#elif defined(__linux__)
+    #include <unistd.h>
+#elif defined(__APPLE__) && defined(__MACH__)
+    #include <unistd.h>
+#endif // Detect OS
+
 uint8_t m; // board size m x m
 uint8_t **board; // 2D array for the board
 enum winState { WIN, DRAW, CONTINUE }; // game states
@@ -23,8 +31,16 @@ void gameplay();
 void writeFile();
 
 int main() {
+    #if defined(_WIN32) || defined(_WIN64)
+        system("cls");
+    #elif defined(__linux__)
+        system("clear");
+    #elif defined(__APPLE__) && defined(__MACH__)
+        system("clear");
+    #endif // Detect OS
+    
     printf("Welcome to Tip-toe!\n");
-    do {
+    do {// the_number to decide game mode
     printf("Choose game mode:\n1. Single Player\n2. Two Players\n3. 3 Players\n4. Exit\n");
     scanf("%hhd", &the_number);
     if (the_number == 4) {
@@ -35,7 +51,8 @@ int main() {
         printf("Invalid choice. Try again.\n");
     }
   } while (the_number < 1 || the_number > 4);
-   do {
+
+   do { // human_count to decide number of human players
     printf("choose how many human players (1-3): ");
     scanf("%hhd", &human_count);
     if (human_count < 1 || human_count > 3) {
@@ -46,9 +63,14 @@ int main() {
     else if( human_count == 2 && the_number == 1) the_number = 2;
     else if( human_count == 3 ) the_number = 3;
 
+    do { // board size 3 to 10
     printf("Enter N for an N x N board: ");
     scanf("%hhd", &m);
-    printf("Player 1 is X and Player 2 is O\n");
+    if (m < 3 || m > 10) {
+        printf("Invalid board size. Try again.\n");
+    }
+    } while (m < 3 || m > 10);
+
     board = (uint8_t **)malloc(m * sizeof(uint8_t *));
     if (!board) {
         fprintf(stderr, "Memory allocation failed\n");
@@ -123,9 +145,19 @@ void gameplay(){
             uint16_t bot = rand() % 10000;
             x = ((bot / 100) % m);
             y = ((bot % 100) % m);
-            printf("Computer chooses: %d %d ", x, y);
-            if (isValidMove(x, y)) {printf("\n"); break;}
-            printf("Invalid!\n");
+            printf("Computer chooses: %d %d ", x, y); 
+            if (isValidMove(x, y)) {
+                printf("\n");
+                #if defined(_WIN32) || defined(_WIN64)
+                    Sleep(2000);
+                #elif defined(__linux__)
+                    sleep(2);
+                #elif defined(__APPLE__) && defined(__MACH__)
+                    sleep(2);
+                #endif // Detect OS 
+                 break;
+                }
+            printf("Invalid!\n");   
         }
         if(i == 1) {result = game_logic('O', x, y);}
         else if(i == 2) {result = game_logic('Z', x, y);}
@@ -180,6 +212,14 @@ char bigChar(char d){
 }    */
 
 void drawBoard(){
+     #if defined(_WIN32) || defined(_WIN64)
+        system("cls");
+    #elif defined(__linux__)
+        system("clear");
+    #elif defined(__APPLE__) && defined(__MACH__)
+        system("clear");
+    #endif // Detect OS to clear screen
+
      printf("   Current Board:\n  ");
     for ( uint8_t j = 0; j < m; j++ )
         { printf("  %d ", j); }
