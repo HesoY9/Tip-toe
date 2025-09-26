@@ -98,7 +98,7 @@ int main() {
 void gameplay(){
     uint8_t x, y;
     enum winState result;
-    writeFile();
+    writeFile("Game Start");
     do {
         
         while (1) {    // Player 1 turn uses 'X'
@@ -108,9 +108,9 @@ void gameplay(){
             printf("Invalid move, try again.\n");
         }
         result = game_logic('X', x, y);
-        if (result == WIN) { printf("Player 1 wins!\n"); writeFile(); return; }
-        if (result == DRAW) { printf("It's a draw!\n"); writeFile(); return; }
-        writeFile();
+        if (result == WIN) { printf("Player 1 wins!\n"); writeFile("Player 1 wins!"); return; }
+        if (result == DRAW) { printf("It's a draw!\n"); writeFile("It's a draw!"); return; }
+        writeFile("Player 1 moved");
 
         if (human_count == 2){   // player 2 turn uses 'O'  
             while (1) {
@@ -120,9 +120,9 @@ void gameplay(){
             printf("Invalid move, try again.\n");
         }
         result = game_logic('O', x, y);
-        if (result == WIN) { printf("Player 2 wins!\n"); writeFile(); return; }
-        if (result == DRAW) { printf("It's a draw!\n"); writeFile(); return; }
-        writeFile();
+        if (result == WIN) { printf("Player 2 wins!\n"); writeFile("Player 2 wins!"); return; }
+        if (result == DRAW) { printf("It's a draw!\n"); writeFile("It's a draw!"); return; }
+        writeFile("Player 2 moved");
         }
 
         if( human_count == 3){    // player 3 turn uses 'Z'
@@ -133,9 +133,9 @@ void gameplay(){
             printf("Invalid move, try again.\n");
         }
         result = game_logic('Z', x, y);
-        if (result == WIN) { printf("Player 3 wins!\n"); writeFile(); return; }
-        if (result == DRAW) { printf("It's a draw!\n"); writeFile(); return; }
-        writeFile();
+        if (result == WIN) { printf("Player 3 wins!\n"); writeFile("Player 3 wins!"); return; }
+        if (result == DRAW) { printf("It's a draw!\n"); writeFile("It's a draw!"); return; }
+        writeFile("Player 3 moved");
         }
 
         if( human_count == the_number) continue;
@@ -162,9 +162,9 @@ void gameplay(){
         if(i == 1) {result = game_logic('O', x, y);}
         else if(i == 2) {result = game_logic('Z', x, y);}
         
-        if (result == WIN) { printf("Computer wins!\n"); writeFile(); return; }
-        if (result == DRAW) { printf("It's a draw!\n"); writeFile(); return; }
-        writeFile();
+        if (result == WIN) { printf("Computer wins!\n"); writeFile("Computer wins!"); return; }
+        if (result == DRAW) { printf("It's a draw!\n"); writeFile("It's a draw!"); return; }
+        writeFile("Computer moved");
         }
     } while (true);
 }
@@ -270,7 +270,7 @@ enum winState game_logic(char c, uint8_t x, uint8_t y){
     return DRAW;
 } // main game logic
 
-void writeFile(){
+void writeFile(char state[16]){
     FILE *f = fopen("gamelog.txt", "a+");
     if (f == NULL)
     {   printf("Error opening file!\n");
@@ -285,5 +285,6 @@ void writeFile(){
         {fprintf(f, "----");}
         fprintf(f, "-\n");
     }
+    if (state[0] != '\0') {fprintf(f, "%s\n\n", state);}
     fclose(f);
 } // write the game log to a file
