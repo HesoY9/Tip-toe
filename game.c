@@ -41,7 +41,7 @@ int main() {
     
     printf("Welcome to Tip-toe!\n");
     do {// the_number to decide game mode
-    printf("Choose game mode:\n1. Single Player\n2. Two Players\n3. 3 Players\n4. Exit\n");
+    printf("Choose game mode:\n\n1. Single Player\n2. Two Players\n3. 3 Players\n4. Exit\n");
     scanf("%hhd", &the_number);
     if (the_number == 4) {
         printf("Exiting the game.\n");
@@ -53,12 +53,12 @@ int main() {
   } while (the_number < 1 || the_number > 4);
 
    do { // human_count to decide number of human players
-    printf("choose how many human players (1-3): ");
+    printf("choose how many human players (0-3): ");
     scanf("%hhd", &human_count);
-    if (human_count < 1 || human_count > 3) {
+    if (human_count < 0 || human_count > 3) {
         printf("Invalid number of players. Try again.\n");
     }
-    } while (human_count < 1 || human_count > 3);
+    } while (human_count < 0 || human_count > 3);
     if( human_count == 1 && the_number == 1) the_number = 2;
     else if( human_count == 2 && the_number == 1) the_number = 2;
     else if( human_count == 3 ) the_number = 3;
@@ -100,7 +100,7 @@ void gameplay(){
     enum winState result;
     writeFile("Game Start");
     do {
-        
+        if(human_count >= 1){
         while (1) {    // Player 1 turn uses 'X'
             printf("player 1\nEnter location x y");
             scanf("%hhd %hhd", &x, &y);
@@ -110,9 +110,9 @@ void gameplay(){
         result = game_logic('X', x, y);
         if (result == WIN) { printf("Player 1 wins!\n"); writeFile("Player 1 wins!"); return; }
         if (result == DRAW) { printf("It's a draw!\n"); writeFile("It's a draw!"); return; }
-        writeFile("Player 1 moved");
+        writeFile("Player 1 moved"); }
 
-        if (human_count == 2){   // player 2 turn uses 'O'  
+        if (human_count >= 2){   // player 2 turn uses 'O'  
             while (1) {
             printf("player 2\nEnter location x y");
             scanf("%hhd %hhd", &x, &y);
@@ -141,11 +141,13 @@ void gameplay(){
         if( human_count == the_number) continue;
             // computer turn
         for(uint8_t i = human_count; i < the_number; i++) {
+            char ch = (i == 1) ? 'O' : (i == 2) ? 'Z' : 'X';
         while (1) {
+            
             uint16_t bot = rand() % 10000;
             x = ((bot / 100) % m);
             y = ((bot % 100) % m);
-            printf("Computer chooses: %d %d ", x, y); 
+            printf("Computer (%c) chooses: %d %d ",ch, x, y); 
             if (isValidMove(x, y)) {
                 printf("\n");
                 #if defined(_WIN32) || defined(_WIN64)
@@ -161,8 +163,9 @@ void gameplay(){
         }
         if(i == 1) {result = game_logic('O', x, y);}
         else if(i == 2) {result = game_logic('Z', x, y);}
-        
-        if (result == WIN) { printf("Computer wins!\n"); writeFile("Computer wins!"); return; }
+        else if(i == 0) {result = game_logic('X', x, y);}
+
+        if (result == WIN) { printf("Computer (%c) wins!\n", ch); writeFile("Computer wins!"); return; }
         if (result == DRAW) { printf("It's a draw!\n"); writeFile("It's a draw!"); return; }
         writeFile("Computer moved");
         }
